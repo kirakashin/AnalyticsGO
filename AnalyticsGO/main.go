@@ -73,6 +73,7 @@ func reportOSHandler(w http.ResponseWriter, r *http.Request) {
 	f := excelize.NewFile()
 	for i, v := range DATA {
 		f.SetCellValue("Sheet1", "A"+strconv.Itoa(i+1), v.BrowserClientInfo.Platform)
+		f.SetCellValue("Sheet1", "B"+strconv.Itoa(i+1), v.BrowserClientInfo.BrowserClient)
 	}
 	if err := f.SaveAs("OS.xlsx"); err != nil {
 		fmt.Println(err)
@@ -104,7 +105,7 @@ func reportCountryHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 	f := excelize.NewFile()
 	var t IP
-	for i, _ := range DATA {
+	for i := range DATA {
 		res, _ := http.Get("http://ip-api.com/json/" + DATA[i].BrowserClientInfo.UserIP + "?fields=17409")
 		ip, _ := ioutil.ReadAll(res.Body)
 		err := json.Unmarshal(ip, &t)
@@ -123,7 +124,7 @@ func reportProviderHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Disposition", "attachment; filename="+strconv.Quote("Provider.xlsx"))
 	w.Header().Set("Content-Type", "application/octet-stream")
 	f := excelize.NewFile()
-	for i, _ := range DATA {
+	for i := range DATA {
 		res, _ := http.Get("http://ip-api.com/json/" + DATA[i].BrowserClientInfo.UserIP + "?fields=17409")
 		var t IP
 		ip, _ := ioutil.ReadAll(res.Body)
