@@ -51,12 +51,13 @@ curl --location --request POST 'localhost:8000/collect' \
 }'
 ```
 
-Получаем отчет по странам, провайдерам, разрешениям экранов и устройставам/браузерам через /report_countries, /report_provider, /report_res и /report_os соответственно
+Получаем отчет по странам, провайдерам, разрешениям экранов, устройставам/браузерам и пикам просмотров через /report_countries, /report_provider, /report_res, /report_os и /report_peaks соответственно
 ```bash
 curl --location --request GET 'localhost:8000/report_countries'
 curl --location --request GET 'localhost:8000/report_provider'
 curl --location --request GET 'localhost:8000/report_res'
 curl --location --request GET 'localhost:8000/report_os'
+curl --location --request GET 'localhost:8000/report_peaks'
 ```
 
-Моменять порт можно в config.json
+Поменять порт можно в config.json
