@@ -27,12 +27,12 @@ curl --location --request GET 'localhost:8000/stat'
 ```bash
 curl --location --request POST 'localhost:8000/collect' \
 --header 'Content-Type: application/json' \
---data-raw '{
+--data-raw '[{
     "viewerId": "11181",
     "name": "Сергей",
     "lastName": "Сергеев",
     "isChatName": false,
-    "email": "sdegtyarev@pikemedia.ru",
+    "email": "qwer@rewq.ru",
     "isChatEmail": false,
     "joinTime": "2021-07-30T14:12:48+03:00",
     "leaveTime": "2021-07-30T14:25:25+03:00",
@@ -42,16 +42,16 @@ curl --location --request POST 'localhost:8000/collect' \
     "chatCommentsDeltaPercent": 0,
     "anotherFields": [],
     "browserClientInfo": {
-        "userIP": "79.137.131.4",
+        "userIP": "79.136.131.4",
         "platform": "Windows 10 64-bit",
         "browserClient": "Chrome 92.0.4515.107",
         "screenData_viewPort": "1920x1040",
         "screenData_resolution": "1920x1080"
     }
-}'
+}]'
 ```
 
-Получаем отчет по странам, провайдерам, разрешениям экранов, устройставам/браузерам и пикам просмотров через /report_countries, /report_provider, /report_res, /report_os и /report_peaks соответственно
+Получаем отчет по странам, провайдерам, разрешениям экранов, устройставам/браузерам (подробная) и пикам просмотров через /report_countries, /report_provider, /report_res, /report_os и /report_peaks соответственно
 ```bash
 curl --location --request GET 'localhost:8000/report_countries'
 curl --location --request GET 'localhost:8000/report_provider'
