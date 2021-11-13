@@ -4,11 +4,8 @@
 
 ## Instalation and run
 
+WIP
 ```bash
-git clone https://github.com/kirakashin/Chat-on-GO
-go get 	github.com/gorilla/mux
-go get	github.com/xuri/excelize
-go run Analytics/main.go
 ```
 
 ## Usage
