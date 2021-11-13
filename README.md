@@ -5,10 +5,11 @@
 ## Instalation and run
 
 ```bash
-git clone https://github.com/kirakashin/Chat-on-GO
+git clone https://github.com/kirakashin/AnalyticsGO
 go get 	github.com/gorilla/mux
-go get	github.com/xuri/excelize
-go run Analytics/main.go
+go get	github.com/xuri/excelize/v2
+cd AnalyticsGO/AnalyticsGO
+go run main.go
 ```
 
 ## Usage
