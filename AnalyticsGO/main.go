@@ -44,10 +44,6 @@ type Status struct {
 	Status string `json:"status"`
 }
 
-type Count struct {
-	Count int `json:"count"`
-}
-
 var DATA []Data
 
 func pingHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,17 +51,35 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(Status{Status: "ok"})
 }
 
+type Count struct {
+	Count int `json:"count"`
+}
+
 func statHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(Count{Count: len(DATA)})
+}
+
+type Collect struct {
+	Skip      int `json:"skip"`
+	Collected int `json:"collected"`
 }
 
 func collectHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("collecting data")
 	w.Header().Set("Content-Type", "application/json")
 	var data []Data
+	var col Collect
 	_ = json.NewDecoder(r.Body).Decode(&data)
-	DATA = append(DATA, data...)
+	for _, v := range data {
+		if v.BrowserClientInfo != nil {
+			DATA = append(DATA, v)
+			col.Collected++
+		} else {
+			col.Skip++
+		}
+	}
+	json.NewEncoder(w).Encode(col)
 }
 
 type IP struct {
