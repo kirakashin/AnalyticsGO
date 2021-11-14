@@ -10,9 +10,10 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/xuri/excelize/v2"
+	"github.com/xuri/excelize"
 )
 
 type Data struct {
@@ -128,62 +129,68 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/octet-stream")
 	f := excelize.NewFile()
 	//sheets
-	f.NewSheet("All stat")
+	f.NewSheet("All_stat")
 	f.DeleteSheet("Sheet1")
-	f.NewSheet("Device/Browser stat")
-	f.NewSheet("Resolution stat")
-	f.NewSheet("Location/provider stat")
-	f.NewSheet("Peaks stat")
+	f.NewSheet("DB_stat")
+	f.NewSheet("Resolution_stat")
+	f.NewSheet("CP_stat")
+	f.NewSheet("Peaks_stat")
 	//names all
-	f.SetCellValue("All stat", "A1", "viewerId")
-	f.SetCellValue("All stat", "B1", "name")
-	f.SetCellValue("All stat", "C1", "lastName")
-	f.SetCellValue("All stat", "D1", "isChatName")
-	f.SetCellValue("All stat", "E1", "email")
-	f.SetCellValue("All stat", "F1", "isChatEmail")
-	f.SetCellValue("All stat", "G1", "joinTime")
-	f.SetCellValue("All stat", "H1", "leaveTime")
-	f.SetCellValue("All stat", "I1", "spentTime")
-	f.SetCellValue("All stat", "J1", "spentTimeDeltaPercent")
-	f.SetCellValue("All stat", "K1", "chatCommentsTotal")
-	f.SetCellValue("All stat", "L1", "chatCommentsDeltaPercent")
-	f.SetCellValue("All stat", "M1", "anotherFields")
-	f.SetCellValue("All stat", "N1", "userIP")
-	f.SetCellValue("All stat", "O1", "platform")
-	f.SetCellValue("All stat", "P1", "browserClient")
-	f.SetCellValue("All stat", "Q1", "screenData_viewPort")
-	f.SetCellValue("All stat", "R1", "screenData_resolution")
+	f.SetCellValue("All_stat", "A1", "viewerId")
+	f.SetCellValue("All_stat", "B1", "name")
+	f.SetCellValue("All_stat", "C1", "lastName")
+	f.SetCellValue("All_stat", "D1", "isChatName")
+	f.SetCellValue("All_stat", "E1", "email")
+	f.SetCellValue("All_stat", "F1", "isChatEmail")
+	f.SetCellValue("All_stat", "G1", "joinTime")
+	f.SetCellValue("All_stat", "H1", "leaveTime")
+	f.SetCellValue("All_stat", "I1", "spentTime")
+	f.SetCellValue("All_stat", "J1", "spentTimeDeltaPercent")
+	f.SetCellValue("All_stat", "K1", "chatCommentsTotal")
+	f.SetCellValue("All_stat", "L1", "chatCommentsDeltaPercent")
+	f.SetCellValue("All_stat", "M1", "anotherFields")
+	f.SetCellValue("All_stat", "N1", "userIP")
+	f.SetCellValue("All_stat", "O1", "platform")
+	f.SetCellValue("All_stat", "P1", "browserClient")
+	f.SetCellValue("All_stat", "Q1", "screenData_viewPort")
+	f.SetCellValue("All_stat", "R1", "screenData_resolution")
 	//names Device/Browser
-	f.SetCellValue("Device/Browser stat", "A1", "platform")
-	f.SetCellValue("Device/Browser stat", "B1", "browserClient")
-	f.SetCellValue("Device/Browser stat", "D1", "platform")
-	f.SetCellValue("Device/Browser stat", "E1", "COUNT")
-	f.SetCellValue("Device/Browser stat", "G1", "browserClient")
-	f.SetCellValue("Device/Browser stat", "H1", "COUNT")
+	f.SetCellValue("DB_stat", "A1", "platform")
+	f.SetCellValue("DB_stat", "B1", "browserClient")
+	f.SetCellValue("DB_stat", "D1", "platform")
+	f.SetCellValue("DB_stat", "E1", "COUNT")
+	f.SetCellValue("DB_stat", "G1", "browserClient")
+	f.SetCellValue("DB_stat", "H1", "COUNT")
+	f.SetCellValue("DB_stat", "J1", "platform")
+	f.SetCellValue("DB_stat", "K1", "COUNT")
+	f.SetCellValue("DB_stat", "M1", "browserClient")
+	f.SetCellValue("DB_stat", "N1", "COUNT")
 
 	statPlatform := make(map[string]int)
 	statBrowser := make(map[string]int)
 	//names Resolution
-	f.SetCellValue("Resolution stat", "A1", "screenData_resolution")
-	f.SetCellValue("Resolution stat", "C1", "screenData_resolution")
-	f.SetCellValue("Resolution stat", "D1", "COUNT")
+	f.SetCellValue("Resolution_stat", "A1", "screenData_resolution")
+	f.SetCellValue("Resolution_stat", "C1", "screenData_resolution")
+	f.SetCellValue("Resolution_stat", "D1", "COUNT")
+	f.SetCellValue("Resolution_stat", "F1", "ratio")
+	f.SetCellValue("Resolution_stat", "G1", "COUNT")
 
 	statResolution := make(map[string]int)
 	//names Location/provider
-	f.SetCellValue("Location/provider stat", "A1", "location")
-	f.SetCellValue("Location/provider stat", "B1", "provider")
-	f.SetCellValue("Location/provider stat", "D1", "location")
-	f.SetCellValue("Location/provider stat", "E1", "COUNT")
-	f.SetCellValue("Location/provider stat", "G1", "provider")
-	f.SetCellValue("Location/provider stat", "H1", "COUNT")
+	f.SetCellValue("CP_stat", "A1", "location")
+	f.SetCellValue("CP_stat", "B1", "provider")
+	f.SetCellValue("CP_stat", "D1", "location")
+	f.SetCellValue("CP_stat", "E1", "COUNT")
+	f.SetCellValue("CP_stat", "G1", "provider")
+	f.SetCellValue("CP_stat", "H1", "COUNT")
 
 	statLocation := make(map[string]int)
 	statProvider := make(map[string]int)
 	var ipip []string
 	//names Peaks
-	f.SetCellValue("Peaks stat", "A1", "time_begin")
-	f.SetCellValue("Peaks stat", "B1", "time_end")
-	f.SetCellValue("Peaks stat", "C1", "COUNT")
+	f.SetCellValue("Peaks_stat", "A1", "time_begin")
+	f.SetCellValue("Peaks_stat", "B1", "time_end")
+	f.SetCellValue("Peaks_stat", "C1", "COUNT")
 
 	var timeStamps stampSlice
 	//main loader
@@ -191,31 +198,31 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 
 		index := strconv.Itoa(i + 2)
 		//all loader
-		f.SetCellValue("All stat", "A"+index, v.ViewerId)
-		f.SetCellValue("All stat", "B"+index, v.Name)
-		f.SetCellValue("All stat", "C"+index, v.LastName)
-		f.SetCellValue("All stat", "D"+index, v.IsChatName)
-		f.SetCellValue("All stat", "E"+index, v.Email)
-		f.SetCellValue("All stat", "F"+index, v.IsChatEmail)
-		f.SetCellValue("All stat", "G"+index, v.JoinTime)
-		f.SetCellValue("All stat", "H"+index, v.LeaveTime)
-		f.SetCellValue("All stat", "I"+index, v.SpentTime)
-		f.SetCellValue("All stat", "J"+index, v.SpentTimeDeltaPercent)
-		f.SetCellValue("All stat", "K"+index, v.ChatCommentsTotal)
-		f.SetCellValue("All stat", "L"+index, v.ChatCommentsDeltaPercent)
-		f.SetCellValue("All stat", "M"+index, v.AnotherFields)
-		f.SetCellValue("All stat", "N"+index, v.BrowserClientInfo.UserIP)
-		f.SetCellValue("All stat", "O"+index, v.BrowserClientInfo.Platform)
-		f.SetCellValue("All stat", "P"+index, v.BrowserClientInfo.BrowserClient)
-		f.SetCellValue("All stat", "Q"+index, v.BrowserClientInfo.ScreenData_viewPort)
-		f.SetCellValue("All stat", "R"+index, v.BrowserClientInfo.ScreenData_resolution)
+		f.SetCellValue("All_stat", "A"+index, v.ViewerId)
+		f.SetCellValue("All_stat", "B"+index, v.Name)
+		f.SetCellValue("All_stat", "C"+index, v.LastName)
+		f.SetCellValue("All_stat", "D"+index, v.IsChatName)
+		f.SetCellValue("All_stat", "E"+index, v.Email)
+		f.SetCellValue("All_stat", "F"+index, v.IsChatEmail)
+		f.SetCellValue("All_stat", "G"+index, v.JoinTime)
+		f.SetCellValue("All_stat", "H"+index, v.LeaveTime)
+		f.SetCellValue("All_stat", "I"+index, v.SpentTime)
+		f.SetCellValue("All_stat", "J"+index, v.SpentTimeDeltaPercent)
+		f.SetCellValue("All_stat", "K"+index, v.ChatCommentsTotal)
+		f.SetCellValue("All_stat", "L"+index, v.ChatCommentsDeltaPercent)
+		f.SetCellValue("All_stat", "M"+index, v.AnotherFields)
+		f.SetCellValue("All_stat", "N"+index, v.BrowserClientInfo.UserIP)
+		f.SetCellValue("All_stat", "O"+index, v.BrowserClientInfo.Platform)
+		f.SetCellValue("All_stat", "P"+index, v.BrowserClientInfo.BrowserClient)
+		f.SetCellValue("All_stat", "Q"+index, v.BrowserClientInfo.ScreenData_viewPort)
+		f.SetCellValue("All_stat", "R"+index, v.BrowserClientInfo.ScreenData_resolution)
 		//os loader
-		f.SetCellValue("Device/Browser stat", "A"+index, v.BrowserClientInfo.Platform)
-		f.SetCellValue("Device/Browser stat", "B"+index, v.BrowserClientInfo.BrowserClient)
+		f.SetCellValue("DB_stat", "A"+index, v.BrowserClientInfo.Platform)
+		f.SetCellValue("DB_stat", "B"+index, v.BrowserClientInfo.BrowserClient)
 		statPlatform[v.BrowserClientInfo.Platform]++
 		statBrowser[v.BrowserClientInfo.BrowserClient]++
 		//res loader
-		f.SetCellValue("Resolution stat", "A"+index, v.BrowserClientInfo.ScreenData_resolution)
+		f.SetCellValue("Resolution_stat", "A"+index, v.BrowserClientInfo.ScreenData_resolution)
 		statResolution[v.BrowserClientInfo.ScreenData_resolution]++
 		//ip loader
 		if i < 1500 {
@@ -228,24 +235,108 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	//os unloader
+	//platform
 	index := 2
+	statOS := make(map[string]int)
+	statOS["Android"] = 0
+	statOS["iOS"] = 0
+	statOS["OS X"] = 0
+	statOS["Windows"] = 0
+	statOS["Ubuntu"] = 0
+	statOS["other"] = 0
 	for i, v := range statPlatform {
-		f.SetCellValue("Device/Browser stat", "D"+strconv.Itoa(index), i)
-		f.SetCellValue("Device/Browser stat", "E"+strconv.Itoa(index), v)
+		f.SetCellValue("DB_stat", "D"+strconv.Itoa(index), i)
+		f.SetCellValue("DB_stat", "E"+strconv.Itoa(index), v)
+
+		if i[:7] == "Android" {
+			statOS["Android"] += v
+		} else if i[:3] == "iOS" {
+			statOS["iOS"] += v
+		} else if i[:4] == "OS X" {
+			statOS["OS X"] += v
+		} else if i[:7] == "Windows" {
+			statOS["Windows"] += v
+		} else if i[:6] == "Ubuntu" {
+			statOS["Ubuntu"] += v
+		} else {
+			statOS["other"] += v
+		}
+
 		index++
 	}
-
 	index = 2
+	for i, v := range statOS {
+		f.SetCellValue("DB_stat", "J"+strconv.Itoa(index), i)
+		f.SetCellValue("DB_stat", "K"+strconv.Itoa(index), v)
+		index++
+	}
+	//browser
+	index = 2
+	statBr := make(map[string]int)
+	statBr["Microsoft Edge"] = 0
+	statBr["Firefox"] = 0
+	statBr["Chrome"] = 0
+	statBr["Safari"] = 0
+	statBr["Yandex Browser"] = 0
+	statBr["Opera"] = 0
+	statBr["other"] = 0
 	for i, v := range statBrowser {
-		f.SetCellValue("Device/Browser stat", "G"+strconv.Itoa(index), i)
-		f.SetCellValue("Device/Browser stat", "H"+strconv.Itoa(index), v)
+		f.SetCellValue("DB_stat", "G"+strconv.Itoa(index), i)
+		f.SetCellValue("DB_stat", "H"+strconv.Itoa(index), v)
+
+		if i[:9] == "Microsoft" {
+			statBr["Microsoft Edge"] += v
+		} else if i[:7] == "Firefox" {
+			statBr["Firefox"] += v
+		} else if i[:6] == "Chrome" {
+			statBr["Chrome"] += v
+		} else if i[:6] == "Safari" {
+			statBr["Safari"] += v
+		} else if i[:6] == "Yandex" {
+			statBr["Yandex Browser"] += v
+		} else if i[:5] == "Opera" {
+			statBr["Opera"] += v
+		} else {
+			statBr["other"] += v
+		}
+
+		index++
+	}
+	index = 2
+	for i, v := range statBr {
+		f.SetCellValue("DB_stat", "M"+strconv.Itoa(index), i)
+		f.SetCellValue("DB_stat", "N"+strconv.Itoa(index), v)
 		index++
 	}
 	//res unloader
 	index = 2
+	statRatio := make(map[string]int)
+	statRatio["16:9"] = 0
+	statRatio["4:3"] = 0
+	statRatio["1:1"] = 0
+	statRatio["other"] = 0
 	for i, v := range statResolution {
-		f.SetCellValue("Resolution stat", "C"+strconv.Itoa(index), i)
-		f.SetCellValue("Resolution stat", "D"+strconv.Itoa(index), v)
+		f.SetCellValue("Resolution_stat", "C"+strconv.Itoa(index), i)
+		f.SetCellValue("Resolution_stat", "D"+strconv.Itoa(index), v)
+		x := strings.Index(i, "x")
+		x1, _ := strconv.Atoi(i[:x])
+		x2, _ := strconv.Atoi(i[x+1:])
+		if x1*9 == x2*16 || x1*16 == x2*9 {
+			statRatio["16:9"] += v
+		} else if x1*4 == x2*3 || x1*3 == x2*4 {
+			statRatio["4:3"] += v
+		} else if x1 == x2 {
+			statRatio["1:1"] += v
+		} else {
+			statRatio["other"] += v
+		}
+
+		index++
+	}
+	index = 2
+	for i, v := range statRatio {
+		f.SetCellValue("Resolution_stat", "F"+strconv.Itoa(index), i)
+		f.SetCellValue("Resolution_stat", "G"+strconv.Itoa(index), v)
 		index++
 	}
 	//ip unloader
@@ -271,21 +362,53 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 		ALERT--
 	}
 	for i, v := range ips {
-		f.SetCellValue("Location/provider stat", "A"+strconv.Itoa(i+2), v.Country)
-		f.SetCellValue("Location/provider stat", "B"+strconv.Itoa(i+2), v.ISP)
+		f.SetCellValue("CP_stat", "A"+strconv.Itoa(i+2), v.Country)
+		f.SetCellValue("CP_stat", "B"+strconv.Itoa(i+2), v.ISP)
 		statLocation[v.Country]++
 		statProvider[v.ISP]++
 	}
 	index = 2
+	cRus := 0
+	cOther := 0
 	for i, v := range statLocation {
-		f.SetCellValue("Location/provider stat", "D"+strconv.Itoa(index), i)
-		f.SetCellValue("Location/provider stat", "E"+strconv.Itoa(index), v)
+		f.SetCellValue("CP_stat", "D"+strconv.Itoa(index), i)
+		f.SetCellValue("CP_stat", "E"+strconv.Itoa(index), v)
+		if i == "Russia" {
+			cRus += v
+		} else {
+			cOther += v
+		}
 		index++
 	}
+	f.SetCellValue("CP_stat", "J1", "Russia")
+	f.SetCellValue("CP_stat", "J2", cRus)
+	f.SetCellValue("CP_stat", "K1", "Other")
+	f.SetCellValue("CP_stat", "K2", cOther)
+
+	sCounty := `{"type": "col", "series": [
+		{
+			"name": "CP_stat!$J$1",
+			"values": "CP_stat!$J$2"
+			},
+		{
+			"name": "CP_stat!$K$1",
+			"values": "CP_stat!$K$2"
+		}
+		],
+		"title":
+		{
+			"name": "Location"
+		}
+		}`
+	if err := f.AddChart("CP_stat", "L1", sCounty); err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	index = 2
 	for i, v := range statProvider {
-		f.SetCellValue("Location/provider stat", "G"+strconv.Itoa(index), i)
-		f.SetCellValue("Location/provider stat", "H"+strconv.Itoa(index), v)
+		f.SetCellValue("CP_stat", "G"+strconv.Itoa(index), i)
+		f.SetCellValue("CP_stat", "H"+strconv.Itoa(index), v)
 		index++
 	}
 	//time unloader
@@ -303,11 +426,25 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 	index = 2
 	for i, v := range timeStamps[:timeStamps.Len()-1] {
 		if v.time != timeStamps[i+1].time {
-			f.SetCellValue("Peaks stat", "A"+strconv.Itoa(index), v.time)
-			f.SetCellValue("Peaks stat", "B"+strconv.Itoa(index), timeStamps[i+1].time)
-			f.SetCellValue("Peaks stat", "C"+strconv.Itoa(index), v.count)
+			f.SetCellValue("Peaks_stat", "A"+strconv.Itoa(index), v.time)
+			f.SetCellValue("Peaks_stat", "B"+strconv.Itoa(index), timeStamps[i+1].time)
+			f.SetCellValue("Peaks_stat", "C"+strconv.Itoa(index), v.count)
 			index++
 		}
+	}
+	sPeaks := `{"type": "line", "series": [
+	{
+		"name": "Peaks_stat!$A$1:$A$` + strconv.Itoa(index-1) + `",
+		"values": "Peaks_stat!$C$1:$C$` + strconv.Itoa(index-1) + `"
+		}],
+		"title":
+		{
+			"name": "Peaks"
+		}
+		}`
+	if err := f.AddChart("Peaks_stat", "E1", sPeaks); err != nil {
+		fmt.Println(err)
+		return
 	}
 	//save
 	if err := f.SaveAs("All.xlsx"); err != nil {
