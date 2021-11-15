@@ -89,6 +89,8 @@ type IP struct {
 	ISP     string
 }
 
+var ips []IP
+
 func ipToCP(ipip []string, c chan []IP) {
 	var ips []IP
 
@@ -184,6 +186,8 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 	f.SetCellValue("CP_stat", "G1", "provider")
 	f.SetCellValue("CP_stat", "H1", "COUNT")
 
+	iIP := len(ips)
+
 	statLocation := make(map[string]int)
 	statProvider := make(map[string]int)
 	var ipip []string
@@ -225,7 +229,7 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 		f.SetCellValue("Resolution_stat", "A"+index, v.BrowserClientInfo.ScreenData_resolution)
 		statResolution[v.BrowserClientInfo.ScreenData_resolution]++
 		//ip loader
-		if i < 1500 {
+		if iIP < i && iIP < iIP+1500 {
 			ipip = append(ipip, v.BrowserClientInfo.UserIP)
 		}
 		//time loader
@@ -340,26 +344,28 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 		index++
 	}
 	//ip unloader
-	var ips []IP
-	ALERT := 1
-	index = 0
-	c := make(chan []IP)
-	for ALERT <= 15 {
-		if index+100 >= len(ipip) {
-			go ipToCP(ipip[index:], c)
-			break
-		} else {
-			go ipToCP(ipip[index:index+100], c)
+	// var ips []IP
+	if len(ipip) != 0 {
+		ALERT := 1
+		index = 0
+		c := make(chan []IP)
+		for ALERT <= 15 {
+			if index+100 >= len(ipip) {
+				go ipToCP(ipip[index:], c)
+				break
+			} else {
+				go ipToCP(ipip[index:index+100], c)
+			}
+			index += 100
+			ALERT++
 		}
-		index += 100
-		ALERT++
-	}
-	if ALERT == 16 {
-		ALERT--
-	}
-	for ALERT > 0 {
-		ips = append(ips, <-c...)
-		ALERT--
+		if ALERT == 16 {
+			ALERT--
+		}
+		for ALERT > 0 {
+			ips = append(ips, <-c...)
+			ALERT--
+		}
 	}
 	for i, v := range ips {
 		f.SetCellValue("CP_stat", "A"+strconv.Itoa(i+2), v.Country)
