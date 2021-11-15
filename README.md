@@ -64,5 +64,6 @@ curl --location --request GET 'localhost:8000/report_peaks'
 ```bash
 curl --location --request GET 'localhost:8000/report_all'
 ```
+!!! Запрос можно делать только один раз в минуту!!!
 
 Поменять порт можно в config.json
