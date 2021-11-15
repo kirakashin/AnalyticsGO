@@ -229,7 +229,7 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 		f.SetCellValue("Resolution_stat", "A"+index, v.BrowserClientInfo.ScreenData_resolution)
 		statResolution[v.BrowserClientInfo.ScreenData_resolution]++
 		//ip loader
-		if iIP < i && iIP < iIP+1500 {
+		if iIP <= i && iIP < iIP+1500 {
 			ipip = append(ipip, v.BrowserClientInfo.UserIP)
 		}
 		//time loader
