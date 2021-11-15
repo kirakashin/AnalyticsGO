@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/xuri/excelize"
+	"github.com/xuri/excelize/v2"
 )
 
 type Data struct {
