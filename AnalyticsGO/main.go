@@ -13,7 +13,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/xuri/excelize/v2"
+	"github.com/xuri/excelize"
 )
 
 type Data struct {
@@ -430,14 +430,23 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	index = 2
+	maxTime, maxCount := "", -1
 	for i, v := range timeStamps[:timeStamps.Len()-1] {
 		if v.time != timeStamps[i+1].time {
 			f.SetCellValue("Peaks_stat", "A"+strconv.Itoa(index), v.time)
 			f.SetCellValue("Peaks_stat", "B"+strconv.Itoa(index), timeStamps[i+1].time)
 			f.SetCellValue("Peaks_stat", "C"+strconv.Itoa(index), v.count)
 			index++
+			if v.count > maxCount {
+				maxTime = v.time
+				maxCount = v.count
+			}
 		}
 	}
+	f.SetCellValue("Peaks_stat", "E1", "First Peak")
+	f.SetCellValue("Peaks_stat", "E2", maxTime)
+	f.SetCellValue("Peaks_stat", "E3", maxCount)
+
 	sPeaks := `{"type": "line", "series": [
 	{
 		"name": "Peaks_stat!$A$1:$A$` + strconv.Itoa(index-1) + `",
@@ -448,7 +457,7 @@ func reportAllHandler(w http.ResponseWriter, r *http.Request) {
 			"name": "Peaks"
 		}
 		}`
-	if err := f.AddChart("Peaks_stat", "E1", sPeaks); err != nil {
+	if err := f.AddChart("Peaks_stat", "G1", sPeaks); err != nil {
 		fmt.Println(err)
 		return
 	}
